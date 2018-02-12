@@ -1,3 +1,12 @@
+##This is from the Udacity React NanoDegree
+
+This exercise requires a backend server Udacity have configured to pair with your front end server. To get that running: 
+
+* git clone https://github.com/udacity/reactnd-contacts-server.git
+* cd reactnd-contacts-server/
+* npm install
+* node server.js
+
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 Below you will find some information on how to perform common tasks.<br>
