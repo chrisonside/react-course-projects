@@ -1,4 +1,4 @@
-##This is from the Udacity React NanoDegree
+## This is my practice repo for the Udacity React NanoDegree
 
 This exercise requires a backend server Udacity have configured to pair with your front end server. To get that running: 
 
