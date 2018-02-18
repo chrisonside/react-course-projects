@@ -10,6 +10,7 @@ const headers = {
   'Authorization': token
 }
 
+// Exporting 3 different functions...
 export const getAll = () =>
   fetch(`${api}/contacts`, { headers })
     .then(res => res.json())
