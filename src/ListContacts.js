@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import escapeRegExp from 'escape-string-regexp'
 import sortBy from 'sort-by'
 
-/* 
+/*
 	CONTROLLED COMPONENT
 	A component which renders a form, but the source of truth for that form state lives inside of the component state rather than inside of the DOM
 
@@ -13,8 +14,9 @@ import sortBy from 'sort-by'
 
 	Added a unique key to each iterated array item when outputting to the UI. This is so React can keep tabs on whether individual items change. (As opposed to React recreating that list every time)
 
+	Used later in the code: onChange={ (event) => this.updateQuery(event.target.value) }
 	Event here is just an event object that React is giving us
-	Our displayed value (in input) will always be the value in the components state, making our state the single source of truth. Because it is React that ultimately controls the value of our input form element, we consider this component a Controlled Component.
+	Our displayed value (in input) will always be the value in the component's state, making our state the single source of truth. Because it is React that ultimately controls the value of our input form element, we consider this component a Controlled Component.
 
 	To recap how user input affects the ListContacts components own state
 	The user enters text into the input field.
@@ -25,7 +27,7 @@ import sortBy from 'sort-by'
 	Note - difference between this and a STATELESS COMPONENT
 	STATELESS COMPONENTS are another example of using the JavaScript class syntax with the render method to build out our components
 	But STATELESS COMPONENTS are when the class only has the render property
-	https://tylermcginnis.com/functional-components-vs-stateless-functional-components-vs-stateless-components/ 
+	https://tylermcginnis.com/functional-components-vs-stateless-functional-components-vs-stateless-components/
 
 	Udacity summary at end of exercise:
 	Each update to state has an associated handler function
@@ -39,7 +41,10 @@ import sortBy from 'sort-by'
 	instant input validation
 	conditionally disable/enable buttons
 	enforce input formats
-	In our ListContacts component, not only does the component render a form, but it also controls what happens in that form based on user input. In this case, event handlers update the component's state with the user's search query. And as we've learned: any changes to React state will cause a re-render on the page, effectively displaying our live search results.
+	In our ListContacts component, not only does the component render a form, but it also controls what happens in that form based on user input. In this case, event handlers update the component's state with the user's search query. And as we've learned: any changes to React state will cause a re-render on the page, effectively displaying our live search results:
+
+	setState() enqueues changes to the component state and tells React that this component and its children need to be re-rendered with the updated state. This is the primary method you use to update the user interface in response to event handlers and server responses.
+  	https://reactjs.org/docs/react-component.html#setstate
 
 	Putting it All Into Perspective
 	When it comes to keeping track of data in your app, think about what will be done with that data, and what that data will look like as your user interfaces with your app. If you want your component to store mutable local data, consider using state to hold this information. Many times, it is state that will be used to manage controlled form elements in your components.
@@ -49,7 +54,7 @@ import sortBy from 'sort-by'
 */
 class ListContacts extends Component {
 	/* Set up our PropTypes config */
-	static PropTypes = {
+	static propTypes = {
 		contacts: PropTypes.array.isRequired,
 		onDeleteContact: PropTypes.func.isRequired
 	}
@@ -69,10 +74,10 @@ class ListContacts extends Component {
 
 	// Remember render is the only property in our component class which we have to specify
 	render() {
-		/* DESTRUCTURING OUR OBJECTS: 
-		At this point, our component is a bit unwieldy; the render() method accesses query from the state object (this.state.query) and contacts from the props object (this.props.contacts) quite often. Because props and state are just JavaScript objects, we can use an ES6 feature to unpack them into distinct variables rather than referencing them as this.state.query and this.props.contacts every time. This process of unpacking is called object destructuring. 
-		All in all, destructuring our objects shouldn't change the return value of our code, but it can make things look a bit cleaner. 
-		So rather than referencing this.state.query loads, or this.props.contacts, or this.props.onDeleteContact, we are going to set up 3 variables off of those objects, and then update all of the references to this.props.contacts for example to be simply contacts. 
+		/* DESTRUCTURING OUR OBJECTS:
+		At this point, our component is a bit unwieldy; the render() method accesses query from the state object (this.state.query) and contacts from the props object (this.props.contacts) quite often. Because props and state are just JavaScript objects, we can use an ES6 feature to unpack them into distinct variables rather than referencing them as this.state.query and this.props.contacts every time. This process of unpacking is called object destructuring.
+		All in all, destructuring our objects shouldn't change the return value of our code, but it can make things look a bit cleaner.
+		So rather than referencing this.state.query loads, or this.props.contacts, or this.props.onDeleteContact, we are going to set up 3 variables off of those objects, and then update all of the references to this.props.contacts for example to be simply contacts.
 		*/
 		const { contacts, onDeleteContact } = this.props
 		const { query } = this.state
@@ -80,16 +85,16 @@ class ListContacts extends Component {
 
 		let showingContacts
 		if (query) {
-			// So if the user has typed something into our input box, meaing our this.state.query is truthy
+			// So if the user has typed something into our input box, meaning our this.state.query is truthy
 			const match = new RegExp(escapeRegExp(query), 'i')
-			showingContacts = contacts.filter((contact) => match.test(contact.name))	
+			showingContacts = contacts.filter((contact) => match.test(contact.name))
 		} else {
 			showingContacts = contacts
 		}
 
 		showingContacts.sort(sortBy('name'))
 
-		// We can think of passing in props to components just as we pass arguments into functions. 
+		// We can think of passing in props to components just as we pass arguments into functions.
 		// We can access a component's props with this.props (or props in stateless functional components).
 		// Any prop that's passed into the component is accessible on the this.props object.
 		return (
@@ -97,23 +102,32 @@ class ListContacts extends Component {
 			<div className='list-contacts'>
 				{/* Help us debug how the state for our ListContacts component is looking
 				// Remember we are binding the form input to our state. So we are updating our state when the user interacts with the input field, and then updating the UI (and input) on the back of the state updating. */}
-				{/* We want to change the state of the app (rather than just the state of this component), but we can't do that as the listContacts component doesn't own the state of the screen - that state lives in the app. So to change this state, we passed a function from the App to the ListContacts component (as we did earlier when passing the onDeleteContact function), and those passed functions can setState in the app.js. My analogy is passing a ladder to the components, so they have a way of altering state in the app, rather than just in their own small pond */}
+				{/* We want to change the state of the app (rather than just the state of this component), but we can't do that as the listContacts component doesn't own the state of the screen - that state lives in the app. So to change this state, we passed a function from the App to the ListContacts component (as we did earlier when passing the onDeleteContact function), and those passed functions can setState in the app.js. My analogy is passing a ladder to the components, so they have a way of altering state in the app, rather than just in their own small pond
+
+				Finally note that we swapped our anchor tag for a React Router <Link>. So we replaced the following with our <Link> component.
+				<a
+					href='#create'
+					onClick={this.props.onNavigate}
+					className='add-contact'
+					>Add Contact</a>
+
+				*/}
 
 				{JSON.stringify(this.state)}
 
 				<div className='list-contacts-top'>
-					<input 
+					<input
 						className='search-contacts'
 						type='text'
 						placeholder='Search contacts'
 						value={query}
 						onChange={ (event) => this.updateQuery(event.target.value) }
 					/>
-					<a
-					href='#create'
-					onClick={this.props.onNavigate}
+					<Link
+					to='/create'
 					className='add-contact'
-					>Add Contact</a>
+					>Add Contact</Link>
+
 				</div>
 
 				{showingContacts.length !== contacts.length && (
@@ -125,7 +139,7 @@ class ListContacts extends Component {
 
 				<ol className='contact-list'>
 					{showingContacts.map((contact) => (
-						
+
 						<li key={contact.id} className='contact-list-item'>
 							<div className='contact-avatar' style={{
 								backgroundImage: `url(${contact.avatarURL})`
